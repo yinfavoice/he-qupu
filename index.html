@@ -796,6 +796,7 @@
   // 直播回放视频列表（后续添加新视频只需在这里追加）
   var replays = [
     { name: '9月2日直播回放', date: '2026-09-02', duration: '1小时47分', bv: 'BV1jAtd6dE43' },
+    { name: '9月2日直播回放', date: '2026-09-02', duration: '1小时47分', bv: 'BV1jAtd6dE43' },
     { name: '8月28日直播回放', date: '2026-08-28', duration: '1小时55分', bv: 'BV1qu4k6HE9z' },
     { name: '8月27日直播回放', date: '2026-08-27', duration: '2小时6分', bv: 'BV1P8tc6SEBb' },
     { name: '8月26日直播回放', date: '2026-08-26', duration: '1小时56分', bv: 'BV1Y9tc6AEFu' },
@@ -1317,13 +1318,45 @@
 
   function renderVideoList() {
     videoListScroll.innerHTML = '';
-    replays.forEach(function(v, idx) {
-      var item = document.createElement('div');
-      item.className = 'video-item';
-      item.innerHTML = '<div class="vi-name">▶ ' + v.name + '</div>' +
-        '<div class="vi-meta">' + v.date + ' · ' + v.duration + '</div>';
-      item.onclick = function() { openVideo(v); };
-      videoListScroll.appendChild(item);
+    var months = {}, monthOrder = [];
+    replays.forEach(function(v) {
+      var m = v.date.substring(0, 7);
+      var label = parseInt(v.date.substring(5,7)) + '月';
+      if (!months[m]) { months[m] = { label: label, items: [] }; monthOrder.push(m); }
+      months[m].items.push(v);
+    });
+    monthOrder.sort().reverse();
+    monthOrder.forEach(function(m) {
+      var group = months[m];
+      var header = document.createElement('div');
+      header.className = 'month-group-header';
+      header.innerHTML = '<span class="mg-label"><span class="mg-arrow"></span>' + group.label + '直播回放</span>' +
+        '<span class="mg-count">' + group.items.length + '场</span>';
+      var itemsWrap = document.createElement('div');
+      itemsWrap.className = 'month-group-items';
+      group.items.forEach(function(v) {
+        var item = document.createElement('div');
+        item.className = 'video-item';
+        item.innerHTML = '<div class="vi-name">▶ ' + v.name + '</div>' +
+          '<div class="vi-meta">' + v.date + ' · ' + v.duration + '</div>';
+        item.onclick = function() { openVideo(v); };
+        itemsWrap.appendChild(item);
+      });
+      if (m === monthOrder[0]) {
+        itemsWrap.style.maxHeight = 'none';
+      } else {
+        header.classList.add('collapsed');
+        itemsWrap.classList.add('collapsed');
+      }
+      header.onclick = function() {
+        header.classList.toggle('collapsed');
+        itemsWrap.classList.toggle('collapsed');
+        if (!itemsWrap.classList.contains('collapsed')) {
+          itemsWrap.style.maxHeight = itemsWrap.scrollHeight + 'px';
+        }
+      };
+      videoListScroll.appendChild(header);
+      videoListScroll.appendChild(itemsWrap);
     });
   }
 
