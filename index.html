@@ -820,7 +820,6 @@
   // 直播回放视频列表（后续添加新视频只需在这里追加）
   var replays = [
     { name: '9月2日直播回放', date: '2026-09-02', duration: '1小时47分', bv: 'BV1jAtd6dE43' },
-    { name: '9月2日直播回放', date: '2026-09-02', duration: '1小时47分', bv: 'BV1jAtd6dE43' },
     { name: '8月28日直播回放', date: '2026-08-28', duration: '1小时55分', bv: 'BV1qu4k6HE9z' },
     { name: '8月27日直播回放', date: '2026-08-27', duration: '2小时6分', bv: 'BV1P8tc6SEBb' },
     { name: '8月26日直播回放', date: '2026-08-26', duration: '1小时56分', bv: 'BV1Y9tc6AEFu' },
@@ -2200,22 +2199,16 @@
     document.addEventListener('mouseup', function() { resizing = false; });
   })();
 
-  // 工具箱宽度拖动（整体字号随宽度联动）
+  // 工具箱尺寸拖动（仅调整面板大小，不影响字号）
   (function() {
-    var rz = document.getElementById('tbResizer'), dragging = false, w0 = 0, base = null;
-    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+    var rz = document.getElementById('tbResizer'), dragging = false, initSize = 0;
     rz.addEventListener('mousedown', function(e) {
       if (window.innerWidth <= 768) return;
       dragging = true; rz.classList.add('dragging');
       var isBottom = document.body.classList.contains('tb-bottom');
       document.body.style.cursor = isBottom ? 'row-resize' : 'col-resize';
       e.preventDefault();
-      w0 = isBottom ? tbPanel.offsetHeight : tbPanel.offsetWidth;
-      base = {
-        live: tbState.scales.live, mkt: tbState.scales.mkt,
-        cur: tbState.scales.cur, next: tbState.scales.next,
-        content: tbState.sizes.content, mktSize: tbState.sizes.mkt
-      };
+      initSize = isBottom ? tbPanel.offsetHeight : tbPanel.offsetWidth;
     });
     document.addEventListener('mousemove', function(e) {
       if (!dragging) return;
@@ -2223,19 +2216,10 @@
       if (isBottom) {
         var h = Math.max(160, Math.min(window.innerHeight * 0.6, e.clientY));
         tbPanel.style.height = h + 'px';
-        var r = clamp(h / w0, 0.7, 1.8);
       } else {
         var w = Math.max(280, Math.min(window.innerWidth * 0.6, window.innerWidth - e.clientX));
         tbPanel.style.width = w + 'px';
-        var r = clamp(w / w0, 0.7, 1.8);
       }
-      tbState.scales.live = clamp(base.live * r, 0.7, 1.8);
-      tbState.scales.mkt = clamp(base.mkt * r, 0.7, 1.8);
-      tbState.scales.cur = clamp(base.cur * r, 0.7, 1.8);
-      tbState.scales.next = clamp(base.next * r, 0.7, 1.8);
-      tbState.sizes.content = Math.round(clamp(base.content * r, 14, 40));
-      tbState.sizes.mkt = Math.round(clamp(base.mktSize * r, 14, 40));
-      tbApplySizes();
     });
     document.addEventListener('mouseup', function() {
       if (dragging) { dragging = false; rz.classList.remove('dragging'); document.body.style.cursor = ''; tbSave(); }
