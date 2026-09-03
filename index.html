@@ -591,6 +591,27 @@
   .month-group-items { overflow: hidden; transition: max-height 0.25s ease; }
   .month-group-items.collapsed { max-height: 0 !important; }
 
+
+  /* 工具箱底部模式 */
+  body.tb-on.tb-bottom .container { flex-direction: column; }
+  body.tb-on.tb-bottom .tb-panel {
+    width: 100%; max-width: 100%; height: auto; min-height: 160px; max-height: 50vh;
+    flex-direction: column;
+  }
+  body.tb-on.tb-bottom .tb-resizer {
+    width: 100%; height: 6px; cursor: row-resize;
+  }
+  body.tb-on.tb-bottom .tb-resizer::after {
+    width: 44px; height: 18px; border-radius: 9px;
+  }
+  .tb-pos-btn {
+    position: absolute; top: 4px; right: 4px; z-index: 5;
+    width: 28px; height: 28px; border: none; border-radius: 14px;
+    background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7);
+    font-size: 14px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background 0.2s;
+  }
+  .tb-pos-btn:hover { background: rgba(255,255,255,0.25); }
 </style>
 </head>
 <body>
@@ -650,6 +671,7 @@
 <!-- ===== 直播工具箱（电脑版 Ctrl+H） ===== -->
 <div class="tb-resizer" id="tbResizer"></div>
 <div class="tb-panel" id="tbPanel">
+  <button class="tb-pos-btn" id="tbPosBtn" title="切换位置（右/下）">⇅</button>
   <div class="tb-rows">
     <div class="tb-row tb-split" id="tbRow1">
       <div class="tb-half" id="tbR1c1">
@@ -2208,6 +2230,22 @@
       if (dragging) { dragging = false; rz.classList.remove('dragging'); document.body.style.cursor = ''; tbSave(); }
     });
   })();
+
+
+  // 工具箱位置切换（右/下）
+  var tbPosBtn = document.getElementById('tbPosBtn');
+  function tbLoadPos() {
+    if (localStorage.getItem('tb-pos') === 'bottom') {
+      document.body.classList.add('tb-bottom');
+    }
+  }
+  function tbTogglePos() {
+    document.body.classList.toggle('tb-bottom');
+    localStorage.setItem('tb-pos', document.body.classList.contains('tb-bottom') ? 'bottom' : 'right');
+    setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 60);
+  }
+  tbPosBtn.addEventListener('click', tbTogglePos);
+  tbLoadPos();
 
   // Ctrl+H 开关
   function tbToggle() {
