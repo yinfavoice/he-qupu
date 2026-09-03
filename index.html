@@ -565,6 +565,32 @@
   .alarm-close-btn:active { background: rgba(255,255,255,0.4); }
   .tb-btn.alarm { background: #e74c3c; color: #fff; font-weight: 700; }
   .tb-btn.reset { background: #f39c12; color: #fff; }
+
+  /* 月份分组折叠 */
+  .month-group-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; margin: 6px 0 2px; border-radius: 8px;
+    background: rgba(255,255,255,0.08); cursor: pointer;
+    user-select: none; transition: background 0.15s;
+  }
+  .month-group-header:hover { background: rgba(255,255,255,0.12); }
+  .month-group-header .mg-label {
+    color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .month-group-header .mg-arrow {
+    display: inline-block; width: 0; height: 0;
+    border-left: 5px solid rgba(255,255,255,0.5);
+    border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+    transition: transform 0.2s;
+  }
+  .month-group-header.collapsed .mg-arrow { transform: rotate(-90deg); }
+  .month-group-header .mg-count {
+    font-size: 12px; color: rgba(255,255,255,0.35);
+  }
+  .month-group-items { overflow: hidden; transition: max-height 0.25s ease; }
+  .month-group-items.collapsed { max-height: 0 !important; }
+
 </style>
 </head>
 <body>
@@ -769,6 +795,7 @@
 
   // 直播回放视频列表（后续添加新视频只需在这里追加）
   var replays = [
+    { name: '9月2日直播回放', date: '2026-09-02', duration: '1小时47分', bv: 'BV1jAtd6dE43' },
     { name: '8月28日直播回放', date: '2026-08-28', duration: '1小时55分', bv: 'BV1qu4k6HE9z' },
     { name: '8月27日直播回放', date: '2026-08-27', duration: '2小时6分', bv: 'BV1P8tc6SEBb' },
     { name: '8月26日直播回放', date: '2026-08-26', duration: '1小时56分', bv: 'BV1Y9tc6AEFu' },
